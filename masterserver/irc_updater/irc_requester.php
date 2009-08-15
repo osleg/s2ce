@@ -7,7 +7,7 @@ db_open();
 
 /* Parse request */
 $action = get_input("f");
-$valid_actions = array("auth", "item_list", "clan_roster");
+$valid_actions = array("auth", "item_list", "clan_roster", "get_all_stats");
 if(!in_array($action, $valid_actions))
 	die("Wrong action");
 
@@ -64,6 +64,11 @@ function handle_item_list()
 function handle_clan_roster()
 {
 	return array();
+}
+
+function handle_get_all_stats()
+{
+	return array();		
 }
 
 ?>

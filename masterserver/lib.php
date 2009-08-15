@@ -49,4 +49,24 @@ function db_open()
 		or die("Cannot select database");
 }
 
+/* Dispatch request into a handle function */
+function dispatch_request($valid_actions)
+{
+	/* Parse request */
+	$action = get_input("f");
+	$valid_actions = ;
+	if(!in_array($action, $valid_actions))
+		die("Wrong action");
+	
+	/* Dispatch request */
+	$func = "handle_".$action;
+	$data = $func();
+	
+	/* Display output */
+	s2_serialize($data);		
+}
+
+/* Open database connection */
+db_open();
+
 ?>

@@ -2,23 +2,10 @@
 
 include("../lib.php");
 
-/* Open database connection */
-db_open();
+/* Dispatch request into handle function */
+dispatch_request(array("auth", "item_list", "clan_roster", "get_all_stats"));
 
-/* Parse request */
-$action = get_input("f");
-$valid_actions = array("auth", "item_list", "clan_roster", "get_all_stats");
-if(!in_array($action, $valid_actions))
-	die("Wrong action");
-
-/* Dispatch request */
-$func = "handle_".$action;
-$data = $func();
-
-/* Display output */
-s2_serialize($data);
-
-/* Request handling */
+/* Authentification */
 function handle_auth()
 {
 	global $config;
@@ -56,16 +43,19 @@ function handle_auth()
 	}
 }
 
+/* Item list [empty] */
 function handle_item_list()
 {
 	return array();		
 }
 
+/* Clan roster [empty] */
 function handle_clan_roster()
 {
 	return array();
 }
 
+/* All stats [empty] */
 function handle_get_all_stats()
 {
 	return array();		

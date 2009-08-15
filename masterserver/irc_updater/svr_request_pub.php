@@ -36,24 +36,25 @@ function handle_set_online()
 	$desc = get_input("desc");
 	$minlevel = intval(get_input("minlevel"));
 	$maxlevel = intval(get_input("maxlevel"));	
+	$login = get_input("login");
 	
 	/* Create in database */
 	$query = "
 		INSERT INTO server SET 
 			ip = '$ip', port = $port, num_conn = $num_conn, max_conn = $max_conn,
 			name = '$name', description = '$description', minlevel = $minlevel,
-			maxlevel = $maxlevel
+			maxlevel = $maxlevel, login = '$login'
 		ON DUPLICATE KEY UPDATE
 			num_conn = $num_conn, max_conn = $max_conn, name = '$name', 
 			description = '$description', minlevel = $minlevel, 
-			maxlevel = $maxlevel"
+			maxlevel = $maxlevel, login = '$login'"
 		
 	mysql_query($query);
 	
 	/* Send id in answer */
 	$id = mysql_insert_id();
 	$data = array(
-		"acct_id" => 0,
+		"acct_id" => $id,
 		"svr_id" => $id,
 		"set_online" => 3,
 		"UPD" => 11,
@@ -65,12 +66,29 @@ function handle_set_online()
 /* Save accounts on a server */
 function handle_set_online_ids()
 {
+	/* Update number of connections */
+	$num_conn = intval(get_input("num_conn"));	
+	$query = "
+		UPDATE server SET
+			num_conn = $num_conn
+		WHERE
+			login = '$login'";
+			
+	/* Return empty */
 	return array();
 }
 
 /* Remove a server */
 function handle_shutdown()
 {
+	/* Remove server from list */
+	$id = intval(get_input("server_id"));
+	$query = "
+		DELETE FROM server WHERE
+			id = $id";
+	mysql_query($query);
+	
+	/* Return empty */
 	return array();
 }
 

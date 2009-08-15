@@ -15,8 +15,10 @@ function handle_auth()
 	
 	$query = "
 		SELECT * FROM user 
-		WHERE nickname = '{$email}' 
-		AND password = MD5('{$config['hash']}{$password}')";
+		WHERE 
+			nickname = '{$email}' 
+		AND 
+			password = MD5('{$config['hash']}{$password}')";
 	
 	$result = mysql_query($query);
 	
@@ -25,19 +27,15 @@ function handle_auth()
 		return array();	
 	} else {
 		/* Return user data */
-		$data = array();
-		$row = mysql_fetch_assoc($result);
-		$data["account_id"] = $row['id'];
-		$data["nickname"] = $row['nickname'];
-		$data["username"] = $row['username'];
+		$data = mysql_fetch_assoc($result);
 		$data["account_type"] = 1;	
 		
 		/* Buddy list */
 		$data["buddy"] = array("error" => "No buddies found.");
 		
 		/* Stats */
-		$data["player_stats"] = array($row['id'] => array());
-		$data["ranked_stats"] = array($row['id'] => array());
+		$data["player_stats"] = array($data['account_id'] => array());
+		$data["ranked_stats"] = array($data['account_id'] => array());
 		
 		return $data;
 	}

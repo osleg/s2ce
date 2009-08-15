@@ -28,7 +28,7 @@ function handle_get_online()
 function handle_set_online()
 {
 	/* Sanitize input */
-	$ip = intval(get_input("ip"));
+	$ip = $_SERVER["REMOTE_ADDR"];
 	$port = intval(get_input("port"));
 	$num_conn = intval(get_input("num_conn"));
 	$max_conn = intval(get_input("num_max"));
@@ -47,7 +47,7 @@ function handle_set_online()
 		ON DUPLICATE KEY UPDATE
 			num_conn = $num_conn, max_conn = $max_conn, name = '$name', 
 			description = '$description', minlevel = $minlevel, 
-			maxlevel = $maxlevel, login = '$login'"
+			maxlevel = $maxlevel, login = '$login'";
 		
 	mysql_query($query);
 	

@@ -27,7 +27,34 @@ function handle_get_online()
 /* Add a server */
 function handle_set_online()
 {
-	return array();
+	/* Sanitize input */
+	$ip = intval(get_input("ip"));
+	$port = intval(get_input("port"));
+	$num_conn = intval(get_input("num_conn"));
+	$max_conn = intval(get_input("num_max"));
+	$name = get_input("name");
+	$desc = get_input("desc");
+	$minlevel = intval(get_input("minlevel"));
+	$maxlevel = intval(get_input("maxlevel"));	
+	
+	/* Create in database */
+	$query = "
+		INSERT INTO server SET 
+			ip = '$ip', port = $port, num_conn = $num_conn, max_conn = $max_conn,
+			name = '$name', description = '$description', minlevel = $minlevel,
+			maxlevel = $maxlevel";
+	mysql_query($query);
+	
+	/* Send id in answer */
+	$id = mysql_insert_id();
+	$data = array(
+		"acct_id" => 0,
+		"svr_id" => $id,
+		"set_online" => 3,
+		"UPD" => 11,
+		"reservation" => -1);
+	
+	return $data;
 }
 
 /* Save accounts on a server */

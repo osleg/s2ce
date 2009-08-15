@@ -10,8 +10,8 @@ function handle_auth()
 {
 	global $config;
 	
-	$email = mysql_real_escape_string(get_input("email"));
-	$password = mysql_real_escape_string(get_input("password"));
+	$email = get_input("email");
+	$password = get_input("password");
 	
 	$query = "
 		SELECT * FROM user 

@@ -31,8 +31,8 @@ function s2_serialize($object)
 function get_input($key, $default = "")
 {
 	if(!isset($_POST[$key]))
-		return $default;
-	return $_POST[$key];
+		return mysql_real_escape_string($default);
+	return mysql_real_escape_string($_POST[$key]);
 }
 
 /* Open database connection */

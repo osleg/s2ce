@@ -50,7 +50,7 @@ MEDIA_ROOT = os.path.join(os.path.dirname(__file__), '../media'),
 MEDIA_URL = '/media/'
 ADMIN_MEDIA_PREFIX = '/django_admin_media/'
 
-ROOT_URLCONF = 'masterserver.urls'
+ROOT_URLCONF = 's2site.urls'
 
 # ==============================================================================
 # application and middleware settings

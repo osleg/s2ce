@@ -3,8 +3,8 @@
 include("lib.php");
 	
 /* Configuration */
-$version = "2.1.0.0";
+$version = "2.1.0";
 
-$data = array("version" => $version);
+$data = array("latest" => $version);
 s2_serialize($data);
 ?>

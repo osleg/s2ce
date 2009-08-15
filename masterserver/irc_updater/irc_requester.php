@@ -58,12 +58,12 @@ function handle_auth()
 
 function handle_item_list()
 {
-		
+	return array();		
 }
 
 function handle_clan_roster()
 {
-		
+	return array();
 }
 
 ?>

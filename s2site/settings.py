@@ -62,6 +62,8 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.sites',
     'django.contrib.admin',
+    's2site.player',
+    's2site.server'
 )
 
 MIDDLEWARE_CLASSES = (

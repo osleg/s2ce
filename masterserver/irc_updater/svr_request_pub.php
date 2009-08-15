@@ -40,14 +40,14 @@ function handle_set_online()
 	
 	/* Create in database */
 	$query = "
-		INSERT INTO server SET 
+		INSERT INTO server_server SET 
 			ip = '$ip', port = $port, num_conn = $num_conn, max_conn = $max_conn,
 			name = '$name', description = '$description', minlevel = $minlevel,
-			maxlevel = $maxlevel, login = '$login'
+			maxlevel = $maxlevel, login = '$login, updated = NOW()'
 		ON DUPLICATE KEY UPDATE
 			num_conn = $num_conn, max_conn = $max_conn, name = '$name', 
 			description = '$description', minlevel = $minlevel, 
-			maxlevel = $maxlevel, login = '$login'";
+			maxlevel = $maxlevel, login = '$login', updated = NOW()";
 		
 	mysql_query($query);
 	
@@ -70,7 +70,8 @@ function handle_set_online_ids()
 	$num_conn = intval(get_input("num_conn"));	
 	$query = "
 		UPDATE server SET
-			num_conn = $num_conn
+			num_conn = $num_conn,
+			updated = NOW()
 		WHERE
 			login = '$login'";
 			
@@ -84,7 +85,9 @@ function handle_shutdown()
 	/* Remove server from list */
 	$id = intval(get_input("server_id"));
 	$query = "
-		DELETE FROM server WHERE
+		DELETE FROM 
+			server_server 
+		WHERE
 			id = $id";
 	mysql_query($query);
 	

@@ -24,7 +24,7 @@ function handle_auth()
 	
 	if(!mysql_num_rows($result) == 1) {
 		/* No user found, return error */
-		return array();	
+		return array("error" => "Invalid login.");	
 	} else {
 		/* Return user data */
 		$data = mysql_fetch_assoc($result);

@@ -42,7 +42,12 @@ function handle_set_online()
 		INSERT INTO server SET 
 			ip = '$ip', port = $port, num_conn = $num_conn, max_conn = $max_conn,
 			name = '$name', description = '$description', minlevel = $minlevel,
-			maxlevel = $maxlevel";
+			maxlevel = $maxlevel
+		ON DUPLICATE KEY UPDATE
+			num_conn = $num_conn, max_conn = $max_conn, name = '$name', 
+			description = '$description', minlevel = $minlevel, 
+			maxlevel = $maxlevel"
+		
 	mysql_query($query);
 	
 	/* Send id in answer */
@@ -60,7 +65,7 @@ function handle_set_online()
 /* Save accounts on a server */
 function handle_set_online_ids()
 {
-	return array();		
+	return array();
 }
 
 /* Remove a server */

@@ -53,8 +53,7 @@ function db_open()
 function dispatch_request($valid_actions)
 {
 	/* Parse request */
-	$action = get_input("f");
-	$valid_actions = ;
+	$action = get_input("f");	
 	if(!in_array($action, $valid_actions))
 		die("Wrong action");
 	

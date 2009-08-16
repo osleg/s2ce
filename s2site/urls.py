@@ -4,16 +4,20 @@ from django.contrib import admin
 from django.views.generic.simple import direct_to_template
 import os
 
-from s2site.server.views import list
+from s2site.player.views import home
 
 # Administration
 admin.autodiscover()
 
 # Main patterns
 urlpatterns = patterns('',
+	# Apps
 	(r'^server/', include('s2site.server.urls')),
-	url(r'^$', list, name="home"),
+	(r'^player/', include('s2site.player.urls')),
 	(r'^admin/', include(admin.site.urls)),
+	
+	# Default site
+	url(r'^$', home, name="home"),	
 )
 
 

@@ -13,7 +13,7 @@ function handle_get_online()
 			id, port, ip, max_conn, num_conn, name, description, 
 			minlevel, maxlevel, official
 		FROM
-			server
+			server_server
 		WHERE
 			updated > DATE_SUB(NOW(), INTERVAL 10 MINUTE)");
 			
@@ -69,7 +69,7 @@ function handle_set_online_ids()
 	/* Update number of connections */
 	$num_conn = intval(get_input("num_conn"));	
 	$query = "
-		UPDATE server SET
+		UPDATE server_server SET
 			num_conn = $num_conn,
 			updated = NOW()
 		WHERE

@@ -31,12 +31,28 @@
 	/* Get parameters */
 	$params = array_splice($url, 0, 2);
 	
-	/* Dispatch to handler */
+	/* Search handler function */
 	$function = "handle_{$action}";
 	if(!function_exists($function)) {
 		header("Status: 404");
 		die;
 	}
+	
+	/* Create output */
+	ob_start();
 	call_user_func_array($function, $params);
+	$content = ob_get_clean();
+
+	/* Insert into base layout */
+	render_view("base", array('content' => $content));
+
+	/* View helper */
+
+	function render_view($filename, $data)
+	{
+		extract($data);
+		$filename = "views/{$filename}.php";
+		include($filename);					
+	}
 
 ?>

@@ -2,7 +2,7 @@
 
 function handle_index()
 {
-	print "Hello world";		
+	render_view("home_index", array());
 }
 
 ?>

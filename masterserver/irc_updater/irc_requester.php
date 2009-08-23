@@ -1,6 +1,6 @@
 <?php
 
-include("../lib.php");
+include("../../common/lib.php");
 
 /* Dispatch request into handle function */
 dispatch_request(array("auth", "item_list", "clan_roster", "get_all_stats"));

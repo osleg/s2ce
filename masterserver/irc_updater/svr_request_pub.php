@@ -13,7 +13,7 @@ function handle_get_online()
 			id, port, ip, max_conn, num_conn, name, description, 
 			minlevel, maxlevel, official
 		FROM
-			server_server
+			server
 		WHERE
 			updated > DATE_SUB(NOW(), INTERVAL 10 MINUTE)");
 			
@@ -40,7 +40,7 @@ function handle_set_online()
 	
 	/* Create in database */
 	$query = "
-		INSERT INTO server_server SET 
+		INSERT INTO server SET 
 			ip = '$ip', port = $port, num_conn = $num_conn, max_conn = $max_conn,
 			name = '$name', description = '$description', minlevel = $minlevel,
 			maxlevel = $maxlevel, login = '$login, updated = NOW()'
@@ -69,7 +69,7 @@ function handle_set_online_ids()
 	/* Update number of connections */
 	$num_conn = intval(get_input("num_conn"));	
 	$query = "
-		UPDATE server_server SET
+		UPDATE server SET
 			num_conn = $num_conn,
 			updated = NOW()
 		WHERE
@@ -86,7 +86,7 @@ function handle_shutdown()
 	$id = intval(get_input("server_id"));
 	$query = "
 		DELETE FROM 
-			server_server 
+			server 
 		WHERE
 			id = $id";
 	mysql_query($query);

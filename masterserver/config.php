@@ -7,4 +7,6 @@ $config['db']['database'] = "masterserver";
 
 $config['hash'] = "abcdefgh";
 
+$config['public_url'] = "s2.michaelk.ch";
+
 ?>

@@ -27,8 +27,15 @@ function s2_serialize($object)
 	}
 }
 
-/* Get input */
+/* Get input values */
 function get_input($key, $default = "")
+{
+	if(!isset($_GET[$key]))
+		return mysql_real_escape_string($default);
+	return mysql_real_escape_string($_GET[$key]);
+}
+
+function post_input($key, $default = "")
 {
 	if(!isset($_POST[$key]))
 		return mysql_real_escape_string($default);

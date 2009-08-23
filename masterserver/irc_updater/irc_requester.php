@@ -10,8 +10,8 @@ function handle_auth()
 {
 	global $config;
 	
-	$email = get_input("email");
-	$password = get_input("password");
+	$email = post_input("email");
+	$password = post_input("password");
 	
 	$query = "
 		SELECT * FROM user 

@@ -1,9 +1,11 @@
 <?php
 
+	include("../common/lib.php");
+
 	$valid_controller = array("player", "server");
 
 	/* Parse URL */
-	$url = split($_GET["url"], "/");
+	$url = split(get_input("url", "/"), "/");
 	
 	if($url[0] == "")
 		$controller = "home";
@@ -18,6 +20,23 @@
 	}
 	
 	/* Dispatch request */
-	dispatch($url);
+	include($file);
+
+	/* Search for action */
+	if(!isset($url[1]) or empty($url[1]))
+		$action = "index";
+	else	
+		$action = $url[1];
+
+	/* Get parameters */
+	$params = array_splice($url, 0, 2);
+	
+	/* Dispatch to handler */
+	$function = "handle_{$action}";
+	if(!function_exists($function)) {
+		header("Status: 404");
+		die;
+	}
+	call_user_func_array($function, $params);
 
 ?>

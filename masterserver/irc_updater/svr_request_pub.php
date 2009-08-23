@@ -29,14 +29,14 @@ function handle_set_online()
 {
 	/* Sanitize input */
 	$ip = $_SERVER["REMOTE_ADDR"];
-	$port = intval(get_input("port"));
-	$num_conn = intval(get_input("num_conn"));
-	$max_conn = intval(get_input("num_max"));
-	$name = get_input("name");
-	$desc = get_input("desc");
-	$minlevel = intval(get_input("minlevel"));
-	$maxlevel = intval(get_input("maxlevel"));	
-	$login = get_input("login");
+	$port = intval(post_input("port"));
+	$num_conn = intval(post_input("num_conn"));
+	$max_conn = intval(post_input("num_max"));
+	$name = post_input("name");
+	$desc = post_input("desc");
+	$minlevel = intval(post_input("minlevel"));
+	$maxlevel = intval(post_input("maxlevel"));	
+	$login = post_input("login");
 	
 	/* Create in database */
 	$query = "
@@ -67,7 +67,7 @@ function handle_set_online()
 function handle_set_online_ids()
 {
 	/* Update number of connections */
-	$num_conn = intval(get_input("num_conn"));	
+	$num_conn = intval(post_input("num_conn"));	
 	$query = "
 		UPDATE server SET
 			num_conn = $num_conn,
@@ -83,7 +83,7 @@ function handle_set_online_ids()
 function handle_shutdown()
 {
 	/* Remove server from list */
-	$id = intval(get_input("server_id"));
+	$id = intval(post_input("server_id"));
 	$query = "
 		DELETE FROM 
 			server 

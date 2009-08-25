@@ -80,6 +80,14 @@ input {
 	width: 300px;
 }
 
+input.form-error {
+	border: 1px solid red;
+}
+
+.error-message {
+	color: red
+};
+
 .submit {
 	width: 300px;
 	padding: 5px 0px 0px 0px;

@@ -13,9 +13,35 @@ class User extends AppModel {
 	);
 
 	var $validate = array(
-		'email' => array('email'),
-		'nickname' => array('maxlength', 30),
-		'password' => array('minlength', 5)
+		'email' => array(
+			'email' => array(
+				'rule' => 'email',
+				'required' => true,
+				'message' => 'Please enter a valid email address'
+			),
+			'unique' => array(
+				'rule' => 'isUnique',
+				'message' => 'This email address is already in use.'
+			)
+		),
+		'username' => array(
+			'between' => array(
+				'rule' => array('between', 3, 25),
+				'required' => true,
+				'message' => 'Your nickname should be between 3 and 25 characters.'
+			),
+			'unique' => array(
+				'rule' => 'isUnique',
+				'message' => 'This nickname has already been taken.'
+			)			
+		),
+		'passwrd' => array(
+			'minLength' => array(
+				'rule' => array('minLength', 5),
+				'required' => true,
+				'message' => 'Your password must be at least 5 characters long.'
+			)
+		)
 	);
 
 }

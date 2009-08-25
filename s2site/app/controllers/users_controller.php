@@ -7,10 +7,10 @@ class UsersController extends AppController {
 	
 	function beforeFilter() 
 	{
-        $this->Auth->allow('home', 'register');
+        $this->Auth->allow('index', 'register');
 	}
 	
-	function home()
+	function index()
 	{
 						
 	}
@@ -18,10 +18,16 @@ class UsersController extends AppController {
 	function register()
 	{
 		if (!empty($this->data)) {
-			if ($this->Post->save($this->data)) {
-				$this->Session->setFlash('Your post has been saved.');
+            // Turn the supplied password into the correct Hash.
+            // and move into the ‘password’ field so it will get saved.
+            $this->data['User']['password'] = $this->Auth->password($this->data['User']['passwrd']);
+
+			if ($this->User->save($this->data)) {
+				$this->Session->setFlash('Your account has been created.');
 				$this->redirect(array('action' => 'index'));
 			}
+			
+			$this->data['User']['passwrd'] = null;
 		}
 	}
 }

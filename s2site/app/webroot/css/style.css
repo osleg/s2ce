@@ -2,6 +2,8 @@
 	padding: 0px;
 	margin: 0px;
 	color: white;
+  	font-family: Tahoma, Arial, sans-serif;	
+  	font-size: 0.98em;
 }
 
 /* General layout */
@@ -40,6 +42,7 @@ body {
 }
 
 /* Headers */
+
 #header1
 {
     width:900px;
@@ -52,4 +55,37 @@ body {
     width:900px;
     height:120px;
     background-image:url(../img/header2.jpg);
+}
+
+/* Text */
+
+h1 {
+	font-size: 1.2em;
+	display: block;
+	border-bottom: 1px solid #eee;
+	margin: 2px 0px 10px 0px;
+}
+
+/* Formular */
+
+label {
+	display: block;
+	padding: 8px 0px 3px 0px;
+}
+
+input {
+	color: black;
+	font-size: 0.8em;
+	padding: 2px;
+	width: 300px;
+}
+
+.submit {
+	width: 300px;
+	padding: 5px 0px 0px 0px;
+	text-align: center;
+}
+
+.submit input {
+	width: auto;
 }

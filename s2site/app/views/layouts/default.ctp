@@ -17,7 +17,7 @@
 				<td id="sidebar">
 					<div class="box">
 						<h3>Login</h3>
-						<a href="/player/add">Register new account</a>
+						<a href="/users/register">Register new account</a>
 					</div>
 					<div class="box">
 						<h3>Servers</h3>

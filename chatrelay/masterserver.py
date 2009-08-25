@@ -1,4 +1,4 @@
-import httplib, urllib, sys
+import httplib, urllib, re, sys
 
 def get_auth_token(host, url, username, password):
 	"""
@@ -21,6 +21,10 @@ def get_auth_token(host, url, username, password):
 		print "Can't get authentification from masterserver"
 		sys.exit()
 	
+	# Receive complete response and close connection
 	data = response.read()
 	conn.close()
-	return data
+	
+	# Use regexp to get the token
+	m = re.search('"cookie";\w:\d*:"([0-9a-f]{32})"', data)	
+	return m.group(1)

@@ -10,13 +10,18 @@ function handle_auth()
 {
 	global $config;
 	
-	$email = post_input("email");
+	$nickname = post_input("email");
 	$password = post_input("password");
 	
 	$query = "
-		SELECT * FROM user 
+		SELECT 
+			users.username AS nickname,
+			users.id AS account_id,
+			users.email
+		FROM 
+			users
 		WHERE 
-			username = '{$email}' 
+			username = '{$nickname}' 
 		AND 
 			password = MD5('{$config['hash']}{$password}')";
 	
@@ -31,7 +36,33 @@ function handle_auth()
 		$data["account_type"] = 1;	
 		
 		/* Buddy list */
-		$data["buddy"] = array("error" => "No buddies found.");
+		$query = "
+			SELECT
+				users.username AS nickname,
+				users.id AS buddy_id,
+				'' AS note,
+				'' AS clan_name,
+				'' AS clan_tag,
+				'' AS clan_img,
+				'' AS avatar
+			FROM
+				buddies
+			JOIN
+				users
+			ON
+				buddies.target_id = users.id
+			WHERE
+				users.source_id = {$data['account_id']}";			
+		$result = mysql_query($query);
+		
+		if(mysql_num_rows($result) == 0) {
+			$data["buddy"] = array("error" => "No buddies found.");
+		} else {
+			$data["buddy"] = array();
+			while($row = mysql_fetch_assoc($result)) {
+				$data["buddy"][$row["buddy_id"]] = $buddy;
+			}
+		}
 		
 		/* Stats */
 		$data["player_stats"] = array($data['account_id'] => array());

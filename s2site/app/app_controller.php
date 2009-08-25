@@ -5,8 +5,15 @@ class AppController extends Controller {
 
 	function beforeFilter() 
 	{
-		$this->currentUser = $this->Auth->user();
-		$this->isAuthed = !empty($this->currentUser);
+		$user = $this->Auth->user();
+		$this->isAuthed = !empty($user);
+		
+		if($this->isAuthed) {
+			// Load current user including buddy list		
+			$this->User->id = $user['User']['id'];
+			$this->User->recursive = 1;
+			$this->currentUser = $this->User->read();				
+		}
 	}
 
 	function beforeRender() 

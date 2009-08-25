@@ -26,6 +26,19 @@
 						<a href="/users/register">Register new account</a><br/>
 						<? endif; ?>
 					</div>
+					<? if($isAuthed): ?>
+					<div class="box">
+						<h3>Buddies</h3>
+						<? if(empty($auth["Buddies"])): ?>
+						You haven't added any buddies yet.
+						<? else: ?>
+						<? foreach($auth["Buddies"] as $buddy): ?>
+						<?= $buddy["username"] ?><br/>
+						<? endforeach; ?>
+						<? endif; ?>
+					</div>
+					<? endif; ?>
+
 					<div class="box">
 						<h3>Servers</h3>
 						No servers online.

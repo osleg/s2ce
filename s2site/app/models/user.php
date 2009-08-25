@@ -4,7 +4,7 @@ class User extends AppModel {
 	var $name = 'User';
 
 	var $hasAndBelongsToMany = array(
-		'buddy' => array(
+		'Buddies' => array(
 			'className' => 'User',
 			'joinTable' => 'buddies',
 			'foreignKey' => 'source_id',

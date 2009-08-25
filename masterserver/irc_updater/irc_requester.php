@@ -16,7 +16,7 @@ function handle_auth()
 	$query = "
 		SELECT * FROM user 
 		WHERE 
-			nickname = '{$email}' 
+			username = '{$email}' 
 		AND 
 			password = MD5('{$config['hash']}{$password}')";
 	
@@ -79,7 +79,7 @@ function handle_nick2id()
 			FROM 
 				users
 			WHERE
-				nickname = '{$safe_nick}'";
+				username = '{$safe_nick}'";
 		$result = mysql_query($query);
 
 		/* Save in output (nickname -> id) */

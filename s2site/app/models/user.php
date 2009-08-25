@@ -2,16 +2,16 @@
 class User extends AppModel {
 
 	var $name = 'User';
-/*
+
 	var $hasAndBelongsToMany = array(
-		'User' => array(
+		'buddy' => array(
 			'className' => 'User',
 			'joinTable' => 'buddies',
 			'foreignKey' => 'source_id',
 			'associationForeignKey' => 'target_id'
 		)
 	);
-*/
+
 	var $validate = array(
 		'email' => array(
 			'email' => array(

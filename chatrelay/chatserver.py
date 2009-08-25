@@ -1,5 +1,5 @@
 from sys import stdout
-from struct import pack
+from struct import pack, unpack
 
 from twisted.internet.protocol import Protocol, ReconnectingClientFactory
 
@@ -35,9 +35,33 @@ class ChatServer(Protocol):
         
     # Receiving data
     def dataReceived(self, data):
-    	print "received data"
+    	number = unpack('b', data[0])[0]
+    	
+    	if number == PK_WELCOME:
+    		self.welcome()
+    	elif number == PK_JOIN:
+    		name = data[1:(len(data)-5)]
+    		id = unpack('i', data[len(data)-4:len(data)])[0]
+    		self.join(name, id)
+    	elif number == PK_LEAVE:
+    		self.leave(unpack('i', data[1:5])[0])
+    	elif number == PK_MESSAGE:
+    		self.message(unpack('i', data[1:5])[0], data[5:len(data)-1])
+    	else:
+    		print "Received unknown packet"
 
     # Callbacks for indiviual packets
+    def welcome(self):
+    	print "Received welcome packet";
+    
+    def message(self, id, text):
+    	print "Received message: %s: %s" % (id, text)
+    	
+    def join(self, name, id):
+    	print "User joined: %s (%s)" % (name, id)
+    	
+    def leave(self, id):
+    	print "User left: %s" % id
         
 class ChatServerClient(ChatServer):
     

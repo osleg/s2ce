@@ -1,13 +1,13 @@
 <?php
 class UsersController extends AppController {
 
-	var $name = 'Users';
-	var $components = array('Auth');
+	var $name = 'Users';	
 	var $helpers = array('Html', 'Form');
 	
 	function beforeFilter() 
 	{
-        $this->Auth->allow('index', 'register');
+		parent::beforeFilter();
+        $this->Auth->allow('index', 'register', 'login');
 	}
 	
 	function index()
@@ -30,5 +30,14 @@ class UsersController extends AppController {
 			$this->data['User']['passwrd'] = null;
 		}
 	}
+	
+	function login()
+	{			
+			
+	}
+	
+	function logout() {
+		$this->redirect($this->Auth->logout());
+	}	
 }
 ?>

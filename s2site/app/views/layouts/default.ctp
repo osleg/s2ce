@@ -15,9 +15,16 @@
 		<table id="content">
 			<tr>
 				<td id="sidebar">
-					<div class="box">
+					<div class="box login">
 						<h3>Login</h3>
-						<a href="/users/register">Register new account</a>
+						<? if($isAuthed): ?>
+						Logged in as:<br/>
+						<? echo $auth['User']['username'] ?><br/><br/>
+						<a href="/users/logout">Logout</a><br/>
+						<? else: ?>
+						<a href="/users/login">Login</a><br/>
+						<a href="/users/register">Register new account</a><br/>
+						<? endif; ?>
 					</div>
 					<div class="box">
 						<h3>Servers</h3>
@@ -29,6 +36,7 @@
 					</div>
 				</td>
 				<td id="main">
+					<? if($session->check('Message.flash')): $session->flash(); endif; ?>
 					<? echo $content_for_layout ?>	
 				</td>
 			</tr>

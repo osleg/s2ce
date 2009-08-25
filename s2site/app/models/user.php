@@ -2,7 +2,7 @@
 class User extends AppModel {
 
 	var $name = 'User';
-
+/*
 	var $hasAndBelongsToMany = array(
 		'User' => array(
 			'className' => 'User',
@@ -11,7 +11,7 @@ class User extends AppModel {
 			'associationForeignKey' => 'target_id'
 		)
 	);
-
+*/
 	var $validate = array(
 		'email' => array(
 			'email' => array(

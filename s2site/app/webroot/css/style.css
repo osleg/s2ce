@@ -2,8 +2,8 @@
 	padding: 0px;
 	margin: 0px;
 	color: white;
-  	font-family: Tahoma, Arial, sans-serif;	
-  	font-size: 0.98em;
+  	font-family: Tahoma, Arial, sans-serif;	  	
+  	font-size: 1em;
 }
 
 /* General layout */
@@ -11,6 +11,7 @@ body {
 	background-color: black;
     background-image: url(../img/bg.jpg);
     background-repeat: repeat-x;
+    font-size: 0.8em;
 }
 
 #wrapper
@@ -66,6 +67,14 @@ h1 {
 	margin: 2px 0px 10px 0px;
 }
 
+#flashMessage {
+	width: 80%;
+	text-align: center;
+	margin: 10px;
+	background-color: #222;
+	border: 1px solid #888;
+}
+
 /* Formular */
 
 label {
@@ -86,7 +95,7 @@ input.form-error {
 
 .error-message {
 	color: red
-};
+}
 
 .submit {
 	width: 300px;
@@ -96,4 +105,20 @@ input.form-error {
 
 .submit input {
 	width: auto;
+}
+
+/* Boxes */
+
+.box {
+	margin: 0px 0px 10px 0px;	
+	border: 1px solid white;
+	width: 175px;
+	padding: 0px 0px 2px 0px;
+}
+
+.box h3 {
+	display: block;
+	text-align: center;
+	border-bottom: 1px solid white;
+	margin: 0px 0px 5px 0px;
 }

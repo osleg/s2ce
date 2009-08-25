@@ -3,7 +3,7 @@
 include("../../common/lib.php");
 
 /* Dispatch request into handle function */
-dispatch_request(array("auth", "item_list", "clan_roster", "get_all_stats"));
+dispatch_request(array("auth", "item_list", "clan_roster", "get_all_stats", "nick2id"));
 
 /* Authentification */
 function handle_auth()
@@ -57,6 +57,39 @@ function handle_clan_roster()
 function handle_get_all_stats()
 {
 	return array();		
+}
+
+/* Get account ID for nickname */
+function handle_nick2id()
+{
+	if(!isset($_POST["nickname"]) or !is_array($_POST["nickname"]))
+		return array();
+		
+	$nicknames = $_POST["nickname"];
+	
+	$data = array();
+	foreach($nicknames as $nick) {
+		/* TODO: Optimize this by creating a single query for all nicknames */
+		$safe_nick = mysql_real_escape_string($nick);
+
+		/* Search nickname in database */
+		$query = "
+			SELECT 
+				id 
+			FROM 
+				users
+			WHERE
+				nickname = '{$safe_nick}'";
+		$result = mysql_query($query);
+
+		/* Save in output (nickname -> id) */
+		if(mysql_num_rows($result) == 1) {
+			$row = mysql_fetch_assoc($result);
+			$data[$nick] = "{$row["id"]}";
+		}
+	}
+	
+	return $data;
 }
 
 ?>

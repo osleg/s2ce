@@ -1,6 +1,6 @@
 <?php
 
 /* Default route */
-Router::connect('/', array('controller' => 'user', 'action' => 'home'));
+Router::connect('/', array('controller' => 'users', 'action' => 'home'));
 
 ?>

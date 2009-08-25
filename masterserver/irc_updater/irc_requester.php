@@ -3,7 +3,7 @@
 include("../common/lib.php");
 
 /* Dispatch request into handle function */
-dispatch_request(array("auth", "item_list", "clan_roster", "get_all_stats", "nick2id"));
+dispatch_request(array("auth", "item_list", "clan_roster", "get_all_stats", "nick2id", "new_buddy", "remove_buddy"));
 
 /* Authentification */
 function handle_auth()
@@ -90,6 +90,61 @@ function handle_nick2id()
 	}
 	
 	return $data;
+}
+
+/* Add a new buddy */
+function handle_new_buddy()
+{
+	$account_id = intval(post_input("account_id"));
+	$buddy_id = intval(post_input("buddy_id"));
+	
+	/* See if these are two valid accounts */
+	$query = "
+		SELECT
+			id
+		FROM
+			users
+		WHERE
+			id IN ($account_id, $buddy_id)";
+	$result = mysql_query($query);
+	
+	if(mysql_num_rows($result) == 2) {
+		/* Insert buddy entry */
+		$query = "
+			INSERT INTO
+				buddies
+			SET
+				source_id = $account_id,
+				target_id = $target_id";
+		mysql_query($query);
+		/* TODO: Find out what notification is */
+		return array(
+			"new_buddy" => "ok",
+			"notification" => array(1,2));
+	} else {
+		return array("error" => "Invalid request");		
+	}
+}
+
+/* Remove a buddy */
+function handle_remove_buddy()
+{
+	$account_id = intval(post_input("account_id"));
+	$buddy_id = intval(post_input("buddy_id"));
+	
+	/* Insert buddy entry */
+	$query = "
+		DELETE FROM
+			buddies
+		WHERE
+			source_id = $account_id
+		AND target_id = $target_id";
+	mysql_query($query);
+	
+	/* TODO: Find out what notification is */
+	return array(
+		"remove_buddy" => "ok",
+		"notification" => array(1,2));
 }
 
 ?>

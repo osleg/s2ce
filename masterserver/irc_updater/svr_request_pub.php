@@ -1,6 +1,6 @@
 <?php
 
-include("../../common/lib.php");
+include("../common/lib.php");
 
 /* Dispatch request into handle function */
 dispatch_request(array("get_online", "set_online", "set_online_ids", "shutdown"));

@@ -1,6 +1,6 @@
 <?php
 
-include("../common/lib.php");
+include("common/lib.php");
 	
 /* Configuration */
 $version = "2.1.0.0";

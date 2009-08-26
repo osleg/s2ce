@@ -3,6 +3,7 @@ from twisted.internet import reactor
 from masterserver import get_auth_token
 from chatserver import ChatClientFactory
 from irc import RelayBotFactory
+from controller import Controller
 
 # Configuration
 CHATHOST="chatserver.savage2.s2games.com"
@@ -30,9 +31,8 @@ def main():
 	# Create factory protocol and application for chat server
 	f = ChatClientFactory(token, ACCOUNTID)
 	
-	# Connect factories between each other
-	f.set_relay_bot(i)
-	i.set_chat_client(f)
+	# Create controller object that provides actual logic
+	c = Controller(f, i)
 	
 	# Connect to network
 	reactor.connectTCP(CHATHOST, CHATPORT, f)

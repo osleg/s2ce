@@ -3,6 +3,8 @@ from struct import pack, unpack
 
 from twisted.internet.protocol import Protocol, ReconnectingClientFactory
 
+from event import Event
+
 # Packet types
 PK_LOGIN=0
 PK_WELCOME=1
@@ -27,10 +29,10 @@ class ChatServer(Protocol):
         self.transport.write(data)
                 
     def pack_byte(self, value):
-        return pack('b', value)
+        return chr(value)
     
     def pack_string(self, value):	
-        return pack("%ss" % (len(value) + 1), value)
+        return value + chr(0)
     
     def pack_int(self, value):
         return pack('i', value)
@@ -40,17 +42,40 @@ class ChatServer(Protocol):
         number = unpack('b', data[0])[0]
         
         if number == PK_WELCOME:
+            # no data
             self.welcome()
         elif number == PK_PINGSERVER:
-        	self.ping()
+            # no data
+            self.ping()
+        elif number == PK_LIST:
+            # not supported at the moment
+            pass
         elif number == PK_JOIN:
+            # <name><id>
             name = data[1:(len(data)-5)]
             id = unpack('i', data[len(data)-4:len(data)])[0]
+            
             self.join(name, id)
         elif number == PK_LEAVE:
-            self.leave(unpack('i', data[1:5])[0])
+            # <id>
+            id = unpack('i', data[1:5])[0]
+            
+            self.leave(id)
         elif number == PK_MESSAGE:
-            self.message(unpack('i', data[1:5])[0], data[5:len(data)-1])
+            # <id><message>
+            id = unpack('i', data[1:5])[0]
+            offset = data.find(chr(0), 5)
+            message = data[5:offset]
+            
+            self.message(id, message)
+        elif number == PK_WHISPER:
+            # <nick><message>
+            offset = data.find(chr(0))
+            nick = data[0:offset]
+            end = data.find(chr(0), offset + 1)
+            message = data[offset+1:end]
+            
+            self.whisper(id, nick, message)
         else:
             print "Received unknown packet: %s" % number
 
@@ -61,6 +86,9 @@ class ChatServer(Protocol):
     def message(self, id, text):
         print "Received message: %s: %s" % (id, text)
         
+    def whisper(self, source, text):
+        print "Received whisper: %s: %s" % (source, text)
+        
     def join(self, name, id):
         print "User joined: %s (%s)" % (name, id)
         
@@ -68,62 +96,101 @@ class ChatServer(Protocol):
         print "User left: %s" % id
         
     def ping(self):
-    	print "Ping? Pong!"
-    	self.send_packet(PK_PINGCLIENT, [])
+        print "Ping? Pong!"
 
-# Relaying implementation
+# Basic Implementation
 class ChatServerClient(ChatServer):
 
+    # Connection management
     def connectionMade(self):
         self.send_packet(PK_LOGIN, [self.factory.account_id, self.factory.token])
-        self.factory.echoers.append(self)
-        
-    def connectionLost(self, reason):
-    	print "LOST CHATSERVER: %s" % reason
-        self.factory.echoers.remove(self)               
-       
+
+    # Answer callbacks
     def join(self, name, id):
         self.factory.users[id] = name
-        if self.factory.join_leave:
-            self.factory.to_irc("Player joined: %s" % name)
+        
+    def ping(self):
+        self.send_packet(PK_PINGCLIENT, [])
         
     def leave(self, id):
-        if self.factory.join_leave:
-            self.factory.to_irc("Player left: %s" % self.get_user_name(id))
-    
+        pass
+
     def message(self, id, text):
-        self.factory.to_irc("<%s> %s" % (self.get_user_name(id), text))
+        pass
         
+    def whisper(self, source, text):
+        pass
+        
+    def welcome(self):
+        pass
+
+    # Resolve names
     def get_user_name(self, id):
         if id in self.factory.users:
             return self.factory.users[id]
         else:
-            return "%s" % id
+            return "%s" % id	
+        
+    # Send public and private message
+    def send_message(self, message):
+        self.send_packet(PK_MESSAGE, [message])
+    
+    def send_whisper(self, target, message):
+        self.send_packet(PK_WHISPER, [target, message])
+
+
+# Implementation supporting events and communication with factory
+class ChatServerEventClient(ChatServerClient):
+    
+    # Connection management
+    def connectionMade(self):
+        ChatServerClient.connectionMade(self)
+        self.factory.echoers.append(self)
+        
+    def connectionLost(self, reason):
+        ChatServerClient.connectionLost(self)
+        self.factory.echoers.remove(self)               
+    
+    # Mapping callbacks to events
+    def join(self, name, id):
+        ChatServerClient.join(self, name, id)
+        self.factory.on_join(name)
+    
+    def leave(self, id):
+        ChatServerClient.leave(self, id)
+        self.factory.on_leave(self.get_user_name(id))
+        
+    def message(self, id, message):
+        ChatServerClient.message(self, id, message)
+        self.factory.on_message(self.get_user_name(id), message)
+        
+    def whisper(self, source, message):
+        ChatServerClient.whisper(self, source, message)
+        self.factory.on_whisper(source, message)
     
 # Client factory
 class ChatClientFactory(ReconnectingClientFactory):
         
-    protocol = ChatServerClient
+    protocol = ChatServerEventClient
     
     def __init__(self, token, account_id):
+        # Persistent data
         self.token = token
         self.account_id = account_id
-        self.join_leave = False
         self.echoers = []
         self.users = {}
         
-    def set_relay_bot(self, bot):
-        self.relay_bot = bot
-    
-    def to_irc(self, message):
-        self.relay_bot.to_irc(message)
-        
-    def to_lobby(self, message):
+        # Events
+        self.on_join = Event()
+        self.on_leave = Event()
+        self.on_message = Event()
+        self.on_whisper = Event()
+
+    # Send messages        
+    def send_message(self, message):
         for echoer in self.echoers:
-            echoer.send_packet(PK_MESSAGE, [message])
-        
-    def show_joinleave(self):
-        self.join_leave = True
-        
-    def hide_joinleave(self):
-        self.join_leave = False    
+            echoer.send_message(message)
+            
+    def send_whisper(self, target, message):
+        for echoer in self.echoers:
+            echoer.send_whisper(target, message)

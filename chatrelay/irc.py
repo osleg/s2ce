@@ -1,5 +1,7 @@
 from twisted.words.protocols import irc
-from twisted.internet import protocol
+from twisted.internet.protocol import ReconnectingClientFactory
+
+from event import Event
 
 class RelayBot(irc.IRCClient):
     def _get_nickname(self):
@@ -10,39 +12,30 @@ class RelayBot(irc.IRCClient):
         self.join(self.factory.channel)
         
     def connectionMade(self):
-    	irc.IRCClient.connectionMade(self)
+        irc.IRCClient.connectionMade(self)
         self.factory.echoers.append(self)
         
     def connectionLost(self, reason):
-    	irc.IRCClient.connectionLost(self, reason)
+        irc.IRCClient.connectionLost(self, reason)
         self.factory.echoers.remove(self)
         
     def privmsg(self, user, channel, msg):
-    	if msg == "!show_joinleave":
-    		self.factory.chat_client.show_joinleave()
-    	elif msg == "!hide_joinleave":
-    		self.factory.chat_client.hide_joinleave()
-    	elif msg.startswith("!send "):
-    		self.factory.to_lobby(msg[6:len(msg)])
+        if msg.startswith("!"):
+            self.factory.on_command(msg)
 
-class RelayBotFactory(protocol.ClientFactory):
+class RelayBotFactory(ReconnectingClientFactory):
     protocol = RelayBot
 
     def __init__(self, channel, nickname):
+        # Save persistent information
         self.channel = channel
         self.nickname = nickname
-        self.echoers = []        
-
-    def set_chat_client(self, client):
-    	self.chat_client = client
-    	
-    def clientConnectionLost(self, connector, reason):        
-    	print "LOST IRC: %s" % reason
-        connector.connect()
+        self.echoers = []
         
-    def to_irc(self, message):
+        # Events that can be subscribed to
+        self.on_command = Event()
+
+    # Send messages to IRC        
+    def send_message(self, message):
         for echoer in self.echoers:
-            echoer.msg(self.channel, message)                
-    
-    def to_lobby(self, message):
-    	self.chat_client.to_lobby(message)
+            echoer.msg(self.channel, message) 		        

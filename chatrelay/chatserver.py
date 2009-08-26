@@ -1,4 +1,4 @@
-from sys import stdout
+import logging
 from struct import pack, unpack
 
 from twisted.internet.protocol import Protocol, ReconnectingClientFactory
@@ -20,6 +20,7 @@ PK_WHISPER=9
 class ChatServer(Protocol):
     # Sending packets
     def send_packet(self, number, params):
+    	logging.debug("Sending packet nr %s" % number)
         data = pack('b', number)
         for val in params:
             if isinstance(val, int):
@@ -38,8 +39,9 @@ class ChatServer(Protocol):
         return pack('i', value)
         
     # Receiving data
-    def dataReceived(self, data):
-        number = unpack('b', data[0])[0]
+    def dataReceived(self, data):    	
+        number = unpack('b', data[0])[0]        
+        logging.debug("Received packet nr %s" % number)
         
         if number == PK_WELCOME:
             # no data
@@ -77,32 +79,33 @@ class ChatServer(Protocol):
             
             self.whisper(id, nick, message)
         else:
-            print "Received unknown packet: %s" % number
+        	logging.warning("Packet is unknown: %s" % number)
 
     # Callbacks for indiviual packets
     def welcome(self):
-        print "Received welcome packet";
+    	logging.warning("Unhandeld welcome packet")
     
     def message(self, id, text):
-        print "Received message: %s: %s" % (id, text)
+    	logging.warning("Unhandeld message packet")
         
     def whisper(self, source, text):
-        print "Received whisper: %s: %s" % (source, text)
+    	logging.warning("Unhandeld whisper packet")
         
     def join(self, name, id):
-        print "User joined: %s (%s)" % (name, id)
+    	logging.warning("Unhandeld join packet")
         
     def leave(self, id):
-        print "User left: %s" % id
+    	logging.warning("Unhandeld leave packet")
         
     def ping(self):
-        print "Ping? Pong!"
+    	logging.warning("Unhandeld ping packet")
 
 # Basic Implementation
 class ChatServerClient(ChatServer):
 
     # Connection management
     def connectionMade(self):
+    	logging.info("Successfully connected to chat server")
         self.send_packet(PK_LOGIN, [self.factory.account_id, self.factory.token])
 
     # Answer callbacks
@@ -127,6 +130,7 @@ class ChatServerClient(ChatServer):
     # Resolve names
     def get_user_name(self, id):
         if id in self.factory.users:
+            logging.warning("Could not resolve user id %s" % id)
             return self.factory.users[id]
         else:
             return "%s" % id	
@@ -144,7 +148,7 @@ class ChatServerEventClient(ChatServerClient):
     
     # Connection management
     def connectionMade(self):
-        ChatServerClient.connectionMade(self)
+        ChatServerClient.connectionMade(self)        
         self.factory.echoers.append(self)
         
     def connectionLost(self, reason):
@@ -186,11 +190,22 @@ class ChatClientFactory(ReconnectingClientFactory):
         self.on_message = Event()
         self.on_whisper = Event()
 
+    # Connection management
+    def clientConnectionLost(self, connector, reason):
+        logging.error("Lost connection to chat server: %s", reason)
+        ReconnectingClientFactory.clientConnectionLost(self, connector, reason)
+
+    def clientConnectionFailed(self, connector, reason):
+        logging.error("Failed connection to chat server: %s", reason)
+        ReconnectingClientFactory.clientConnectionFailed(self, connector, reason)	
+        
     # Send messages        
     def send_message(self, message):
+    	logging.debug("Sending message to chat: %s" % message)
         for echoer in self.echoers:
             echoer.send_message(message)
             
     def send_whisper(self, target, message):
+    	logging.debug("Sending whisper to chat: %s %s" % (target, message))
         for echoer in self.echoers:
             echoer.send_whisper(target, message)

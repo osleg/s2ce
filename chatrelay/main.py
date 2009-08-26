@@ -1,3 +1,6 @@
+import logging
+import sys
+
 from twisted.internet import reactor
 
 from masterserver import get_auth_token
@@ -21,6 +24,9 @@ IRCNAME="Sav2Lobby"
 IRCCHANNEL="#sav2relay"
 
 def main():
+	# Set up logging
+	logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
+	
 	# To login to the chat server, we need an authentification token which
 	# we can receive by logging into the master server.
 	token = get_auth_token(MASTERHOST, MASTERURL, USERNAME, PASSWORD)

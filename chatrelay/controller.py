@@ -1,6 +1,14 @@
+import logging
+
 from chatserver import ChatClientFactory
 from irc import RelayBotFactory
 from event import Event
+
+LEVELS = {'debug': logging.DEBUG,
+          'info': logging.INFO,
+          'warning': logging.WARNING,
+          'error': logging.ERROR,
+          'critical': logging.CRITICAL}
 
 class Controller:
     
@@ -20,25 +28,36 @@ class Controller:
     # Event handling
         
     def on_irc_command(self, msg):
+    	logging.info("Received IRC Command: %s" % msg)
+    	
     	# !send message
         if msg.startswith("!send "):
-            self.chat_client.send_message(msg[5:len(msg)])
-        # !set meta 1/0
+            self.chat_client.send_message(msg[5:len(msg)])        
+        # !set key value
         elif msg.startswith("!set "):
             args = msg.split(" ")
+            # !set meta 1/0
             if args[1] == "meta":
                 if args[2] == "1":
                     self.show_meta = True
-                if args[2] == "0":
+                elif args[2] == "0":
                     self.show_meta = False
+                else:
+                	self.irc_client.send_message("Syntax is !set meta 1/0")
+            # !set logging level
+            if args[1] == "logging":
+            	logging.basicConfig(level=LEVELS.get(args[2], logging.NOTSET))
     
     def on_chat_join(self, name):
+    	logging.info("Player joined: %s" % name)
         if self.show_meta:
             self.irc_client.send_message("Player join: %s" % name)
             
     def on_chat_leave(self, name):
+    	logging.info("Player left: %s" % name)
         if self.show_meta:
             self.irc_client.send_message("Player left: %s" % name)
             
     def on_chat_message(self, nick, msg):
+    	logging.info("Received chat message: <%s> %s" % (nick, msg))
         self.irc_client.send_message("<%s> %s" % (nick, msg))

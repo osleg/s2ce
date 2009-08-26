@@ -1,4 +1,4 @@
-import httplib, urllib, re, sys
+import httplib, urllib, re, sys, logging
 
 def get_auth_token(host, url, username, password):
 	"""
@@ -13,6 +13,7 @@ def get_auth_token(host, url, username, password):
 	}
 	
 	# Send request to master server
+	logging.debug("Sending request to auth server")
 	conn = httplib.HTTPConnection(host)
 	conn.request("POST", url, params, headers)
 	response = conn.getresponse()
@@ -22,9 +23,12 @@ def get_auth_token(host, url, username, password):
 		sys.exit()
 	
 	# Receive complete response and close connection
-	data = response.read()
+	data = response.read()	
 	conn.close()
+	logging.debug("Received answer from auth server")
 	
 	# Use regexp to get the token
 	m = re.search('"cookie";\w:\d*:"([0-9a-f]{32})"', data)	
-	return m.group(1)
+	token = m.group(1)
+	logging.info("Received auth token: %s" % token)
+	return token	

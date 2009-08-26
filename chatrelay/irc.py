@@ -1,3 +1,5 @@
+import logging
+
 from twisted.words.protocols import irc
 from twisted.internet.protocol import ReconnectingClientFactory
 
@@ -35,7 +37,16 @@ class RelayBotFactory(ReconnectingClientFactory):
         # Events that can be subscribed to
         self.on_command = Event()
 
+	# Connection management
+    def clientConnectionLost(self, connector, reason):
+    	logging.error("Lost connection to IRC server: %s", reason)
+        ReconnectingClientFactory.clientConnectionLost(self, connector, reason)
+
+    def clientConnectionFailed(self, connector, reason):
+        logging.error("Failed connection to IRC server: %s", reason)
+        ReconnectingClientFactory.clientConnectionFailed(self, connector, reason)	
+
     # Send messages to IRC        
     def send_message(self, message):
         for echoer in self.echoers:
-            echoer.msg(self.channel, message) 		        
+            echoer.msg(self.channel, message)

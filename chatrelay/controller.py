@@ -20,7 +20,8 @@ class Controller:
         self.irc_client.on_command += self.on_irc_command
         self.chat_client.on_join += self.on_chat_join
         self.chat_client.on_leave += self.on_chat_leave
-        self.chat_client.on_message += self.on_chat_message        
+        self.chat_client.on_message += self.on_chat_message
+        self.chat_client.on_whisper += self.on_chat_whisper        
         
         # Options
         self.show_meta = False
@@ -29,6 +30,7 @@ class Controller:
         self.commands = {
         	'send': self.irc_send,
         	'set': self.irc_set,
+        	'whisper': self.irc_whisper,
         }
 
     # Event handling
@@ -59,6 +61,10 @@ class Controller:
     	logging.info("Received chat message: <%s> %s" % (nick, msg))
         self.irc_client.send_message("<%s> %s" % (nick, msg))
         
+    def on_chat_whisper(self, nick, msg):
+    	logging.info("Received whisper: <%s> %s" % (source, msg))
+    	self.irc_client.send_message("[whisper] <%s> %s" % (nick, msg))
+        
     # IRC Commands
         
     def irc_send(self, data):
@@ -66,15 +72,20 @@ class Controller:
     	self.chat_client.send_message(msg[5:len(msg)])
     	
     def irc_set(self, data):
-        args = data.split(" ")
+        (key, value) = data.split(" ", 1)
         # !set meta 1/0
-        if args[0] == "meta":
-            if args[1] == "1":
+        if key == "meta":
+            if value == "1":
                 self.show_meta = True
-            elif args[1] == "0":
+            elif value == "0":
                 self.show_meta = False
             else:
             	self.irc_client.send_message("Syntax is !set meta 1/0")
         # !set logging level
-        if args[1] == "logging":
-        	logging.basicConfig(level=LEVELS.get(args[2], logging.NOTSET))    	
+        if key == "logging":
+        	logging.basicConfig(level=LEVELS.get(value, logging.NOTSET))    	
+        	
+	def irc_whisper(self, data):
+		# !whisper target message
+		(target, message) = data.split(" ", 1)
+		self.chat_client.send_whisper(target, message)

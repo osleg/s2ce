@@ -77,7 +77,7 @@ class ChatServer(Protocol):
             end = data.find(chr(0), offset + 1)
             message = data[offset+1:end]
             
-            self.whisper(id, nick, message)
+            self.whisper(nick, message)
         else:
         	logging.warning("Packet is unknown: %s" % number)
 
@@ -129,10 +129,10 @@ class ChatServerClient(ChatServer):
 
     # Resolve names
     def get_user_name(self, id):
-        if id in self.factory.users:
-            logging.warning("Could not resolve user id %s" % id)
+        if id in self.factory.users:            
             return self.factory.users[id]
         else:
+        	logging.warning("Could not resolve user id %s" % id)
             return "%s" % id	
         
     # Send public and private message

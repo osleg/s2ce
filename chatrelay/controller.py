@@ -71,14 +71,14 @@ class Controller:
         self.irc_client.send_message("<%s> %s" % (nick, msg))
         
     def on_chat_whisper(self, nick, msg):
-        logging.info("Received whisper: <%s> %s" % (source, msg))
+        logging.info("Received whisper: <%s> %s" % (nick, msg))
         self.irc_client.send_message("[whisper] <%s> %s" % (nick, msg))
         
     # IRC Commands
         
     def irc_send(self, data):
         # !send message
-        self.chat_client.send_message(msg[5:len(msg)])
+        self.chat_client.send_message(data)
         
     def irc_set(self, data):
         (key, value) = self.split_data(data)

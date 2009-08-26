@@ -20,7 +20,7 @@ PK_WHISPER=9
 class ChatServer(Protocol):
     # Sending packets
     def send_packet(self, number, params):
-    	logging.debug("Sending packet nr %s" % number)
+        logging.debug("Sending packet nr %s" % number)
         data = pack('b', number)
         for val in params:
             if isinstance(val, int):
@@ -40,72 +40,79 @@ class ChatServer(Protocol):
         
     # Receiving data
     def dataReceived(self, data):    	
-        number = unpack('b', data[0])[0]        
-        logging.debug("Received packet nr %s" % number)
+        while(len(data) > 0):
+            (number, data) = self.get_byte(data)
+            logging.debug("Received packet nr %s" % number)    	    
         
-        if number == PK_WELCOME:
-            # no data
-            self.welcome()
-        elif number == PK_PINGSERVER:
-            # no data
-            self.ping()
-        elif number == PK_LIST:
-            # not supported at the moment
-            pass
-        elif number == PK_JOIN:
-            # <name><id>
-            name = data[1:(len(data)-5)]
-            id = unpack('i', data[len(data)-4:len(data)])[0]
-            
-            self.join(name, id)
-        elif number == PK_LEAVE:
-            # <id>
-            id = unpack('i', data[1:5])[0]
-            
-            self.leave(id)
-        elif number == PK_MESSAGE:
-            # <id><message>
-            id = unpack('i', data[1:5])[0]
-            offset = data.find(chr(0), 5)
-            message = data[5:offset]
-            
-            self.message(id, message)
-        elif number == PK_WHISPER:
-            # <nick><message>
-            offset = data.find(chr(0))
-            nick = data[0:offset]
-            end = data.find(chr(0), offset + 1)
-            message = data[offset+1:end]
-            
-            self.whisper(nick, message)
-        else:
-        	logging.warning("Packet is unknown: %s" % number)
-
-    # Callbacks for indiviual packets
+            if number == PK_WELCOME:
+                # no data
+                self.welcome()
+            elif number == PK_PINGSERVER:
+                # no data
+                self.ping()
+            elif number == PK_LIST:
+                # not supported at the moment
+                data = ""
+            elif number == PK_JOIN:
+                # <name><id>
+                (name, data) = self.get_string(data)
+                (id, data) = self.get_int(data)
+                self.join(name, id)
+            elif number == PK_LEAVE:
+                # <id>
+                (id, data) = self.get_int(data)	            
+                self.leave(id)
+            elif number == PK_MESSAGE:
+                # <id><message>
+                (id, data) = self.get_int(data)
+                (message, data) = self.get_string(data)
+                self.message(id, message)
+            elif number == PK_WHISPER:
+                # <nick><message>
+                (nick, data) = self.get_string(data)
+                (message, data) = self.get_string(data)
+                self.whisper(nick, message)
+            else:
+                logging.warning("Packet is unknown: %s" % number)
+                data = ""
+    
+    def get_byte(self, data):
+        number = unpack('b', data[0])[0]
+        return (number, data[1:len(data)])
+        
+    def get_string(self, data):
+        offset = data.find(chr(0))
+        return (data[0:offset], data[offset+1:len(data)])
+        
+    def get_int(self, data):
+        number = unpack('i', data[0:4])[0]
+        return (number, data[4:len(data)])
+        
+    # Callbacks for individual packets
     def welcome(self):
-    	logging.warning("Unhandeld welcome packet")
+        logging.warning("Unhandeld welcome packet")
     
     def message(self, id, text):
-    	logging.warning("Unhandeld message packet")
+        logging.warning("Unhandeld message packet")
         
     def whisper(self, source, text):
-    	logging.warning("Unhandeld whisper packet")
+        logging.warning("Unhandeld whisper packet")
         
     def join(self, name, id):
-    	logging.warning("Unhandeld join packet")
+        logging.warning("Unhandeld join packet")
         
     def leave(self, id):
-    	logging.warning("Unhandeld leave packet")
+        logging.warning("Unhandeld leave packet")
         
     def ping(self):
-    	logging.warning("Unhandeld ping packet")
+        logging.warning("Unhandeld ping packet")
 
 # Basic Implementation
 class ChatServerClient(ChatServer):
 
     # Connection management
     def connectionMade(self):
-    	logging.info("Successfully connected to chat server")
+        logging.info("Successfully connected to chat server")
         self.send_packet(PK_LOGIN, [self.factory.account_id, self.factory.token])
 
     # Answer callbacks
@@ -132,7 +139,7 @@ class ChatServerClient(ChatServer):
         if id in self.factory.users:            
             return self.factory.users[id]
         else:
-        	logging.warning("Could not resolve user id %s" % id)
+            logging.warning("Could not resolve user id %s" % id)
             return "%s" % id	
         
     # Send public and private message
@@ -201,11 +208,11 @@ class ChatClientFactory(ReconnectingClientFactory):
         
     # Send messages        
     def send_message(self, message):
-    	logging.debug("Sending message to chat: %s" % message)
+        logging.debug("Sending message to chat: %s" % message)
         for echoer in self.echoers:
             echoer.send_message(message)
             
     def send_whisper(self, target, message):
-    	logging.debug("Sending whisper to chat: %s %s" % (target, message))
+        logging.debug("Sending whisper to chat: %s %s" % (target, message))
         for echoer in self.echoers:
             echoer.send_whisper(target, message)

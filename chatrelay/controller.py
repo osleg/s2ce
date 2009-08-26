@@ -27,7 +27,7 @@ class Controller:
         self.chat_client.on_join += self.on_chat_join
         self.chat_client.on_leave += self.on_chat_leave
         self.chat_client.on_message += self.on_chat_message
-        self.chat_client.on_whisper += self.on_chat_whisper        
+        self.chat_client.on_whisper += self.on_chat_whisper
         
         # Options
         self.show_meta = False

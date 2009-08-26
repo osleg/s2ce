@@ -17,7 +17,7 @@ USERNAME="ChatBot"
 PASSWORD="roboter"
 ACCOUNTID=350570
 IRCNAME="Sav2Lobby"
-IRCCHANNEL="#savage"
+IRCCHANNEL="#sav2relay"
 
 def main():
 	# To login to the chat server, we need an authentification token which

@@ -6,6 +6,8 @@ from twisted.internet.protocol import Protocol, ReconnectingClientFactory
 # Packet types
 PK_LOGIN=0
 PK_WELCOME=1
+PK_PINGSERVER=2
+PK_PINGCLIENT=3
 PK_MESSAGE=4
 PK_LIST=5
 PK_JOIN=6
@@ -39,6 +41,8 @@ class ChatServer(Protocol):
         
         if number == PK_WELCOME:
             self.welcome()
+        elif number == PK_PINGSERVER:
+        	self.ping()
         elif number == PK_JOIN:
             name = data[1:(len(data)-5)]
             id = unpack('i', data[len(data)-4:len(data)])[0]
@@ -48,7 +52,7 @@ class ChatServer(Protocol):
         elif number == PK_MESSAGE:
             self.message(unpack('i', data[1:5])[0], data[5:len(data)-1])
         else:
-            print "Received unknown packet"
+            print "Received unknown packet: %s" % number
 
     # Callbacks for indiviual packets
     def welcome(self):
@@ -62,22 +66,24 @@ class ChatServer(Protocol):
         
     def leave(self, id):
         print "User left: %s" % id
+        
+    def ping(self):
+    	print "Ping? Pong!"
+    	self.send_packet(PK_PINGCLIENT, [])
 
 # Relaying implementation
 class ChatServerClient(ChatServer):
 
-    def __init__(self):
-        self.users = {}
-    
     def connectionMade(self):
         self.send_packet(PK_LOGIN, [self.factory.account_id, self.factory.token])
         self.factory.echoers.append(self)
         
     def connectionLost(self, reason):
-        self.factory.echoers.remove(self)       
+    	print "LOST CHATSERVER: %s" % reason
+        self.factory.echoers.remove(self)               
        
     def join(self, name, id):
-        self.users[id] = name
+        self.factory.users[id] = name
         if self.factory.join_leave:
             self.factory.to_irc("Player joined: %s" % name)
         
@@ -89,8 +95,8 @@ class ChatServerClient(ChatServer):
         self.factory.to_irc("<%s> %s" % (self.get_user_name(id), text))
         
     def get_user_name(self, id):
-        if id in self.users:
-            return self.users[id]
+        if id in self.factory.users:
+            return self.factory.users[id]
         else:
             return "%s" % id
     
@@ -102,8 +108,9 @@ class ChatClientFactory(ReconnectingClientFactory):
     def __init__(self, token, account_id):
         self.token = token
         self.account_id = account_id
-        self.join_leave = True
+        self.join_leave = False
         self.echoers = []
+        self.users = {}
         
     def set_relay_bot(self, bot):
         self.relay_bot = bot

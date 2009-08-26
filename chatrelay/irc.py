@@ -37,6 +37,7 @@ class RelayBotFactory(protocol.ClientFactory):
     	self.chat_client = client
     	
     def clientConnectionLost(self, connector, reason):        
+    	print "LOST IRC: %s" % reason
         connector.connect()
         
     def to_irc(self, message):

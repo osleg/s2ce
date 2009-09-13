@@ -13,16 +13,21 @@ curl_setopt($ch, CURLOPT_URL, $TARGET);
 curl_setopt($ch, CURLOPT_POST, 1);
 curl_setopt($ch, CURLOPT_POSTFIELDS, "f=get_online");
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 15);
 
 // execute post
 $result = curl_exec($ch);
 
-// parse result
-$result = s2_deserialize($result);
-
-// calculate sum of players
-$total = 0;
-foreach($result as $server) {
-	$total += $server['num_conn'];
+if (strlen($result) > 0) {
+	// parse result
+	$result = s2_deserialize($result);
+	
+	// calculate sum of players
+	$total = 0;
+	foreach($result as $server) {
+		$total += $server['num_conn'];
+	}
+	print $total;
+} else {
+	print 0;
 }
-print $total;

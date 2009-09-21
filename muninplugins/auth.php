@@ -13,7 +13,7 @@ curl_setopt($ch, CURLOPT_URL, $TARGET);
 curl_setopt($ch, CURLOPT_POST, 1);
 curl_setopt($ch, CURLOPT_POSTFIELDS, "f=auth&email=ChatBot&password=roboter");
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 15);
+curl_setopt($ch, CURLOPT_TIMEOUT, 15);
 
 
 // execute post

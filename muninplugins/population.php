@@ -49,14 +49,15 @@ if ($argv[1] == "config") {
 				$total_official += $server['num_conn'];
 			if (in_array($server['id'], $SERVERS_EU))
 				$total_eu += $server['num_conn'];
-			if (in_array($server['id'], $SERVERS_US))
+			if (in_array($server['id'], $SERVERS_US)) {
 				$total_us += $server['num_conn'];
+			}
 		}
 		
 		print "population.value $total\n";
 		print "official.value $total_official\n";
-		print "us.value $total_eu\n";
-		print "eu.value $total_us\n";
+		print "us.value $total_us\n";
+		print "eu.value $total_eu\n";
 	} else {
 		print "population.value 0\n";
 		print "official.value 0\n";

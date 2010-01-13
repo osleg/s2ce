@@ -52,7 +52,7 @@ function handle_auth()
 			ON
 				buddies.target_id = users.id
 			WHERE
-				users.source_id = {$data['account_id']}";			
+				users.source_id = {$data['account_id']}";
 		$result = mysql_query($query);
 		
 		if(mysql_num_rows($result) == 0) {

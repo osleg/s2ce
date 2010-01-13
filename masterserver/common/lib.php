@@ -42,6 +42,15 @@ function post_input($key, $default = "")
 	return mysql_real_escape_string($_POST[$key]);
 }
 
+function post_serialized($key, $default = array())
+{
+	if(!isset($_POST[$key]))
+		$result = $default;
+	else
+		$result = unserialize($_POST[$key]);
+	return db_escape($result);
+}
+
 /* Open database connection */
 function db_open()
 {
@@ -62,6 +71,28 @@ function db_query($query) {
 	if (!$result)
 		throw new Exception(mysql_error());
 	return $result;
+}
+
+/* Escape anything */
+function db_escape($values, $quotes = true) {
+	if (is_array($values)) {
+		foreach ($values as $key => $value) {
+			$values[$key] = db_escape($value, $quotes);
+		}
+	}
+	else if ($values === null) {
+		$values = 'NULL';
+	}
+	else if (is_bool($values)) {
+		$values = $values ? 1 : 0;
+	}
+	else if (!is_numeric($values)) {
+		$values = mysql_real_escape_string($values);
+		if ($quotes) {
+			$values = '"' . $values . '"';
+		}
+	}
+	return $values;
 }
 
 /* Dispatch request into a handle function */

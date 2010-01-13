@@ -56,6 +56,14 @@ function db_open()
 		or die("Cannot select database");
 }
 
+/* Send query */
+function db_query($query) {
+	$result = mysql_query($query);
+	if (!$result)
+		throw new Exception(mysql_error());
+	return $result;
+}
+
 /* Dispatch request into a handle function */
 function dispatch_request($valid_actions)
 {

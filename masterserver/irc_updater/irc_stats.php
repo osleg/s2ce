@@ -24,20 +24,20 @@ $fields = array(
 		'ip'
 	),
 	'commander' => array(
-		'builds',
-		'exp',
-		'gold',
-		'razed',
-		'hp_healed',
-		'pdmg',
-		'kills',
-		'debuffs',
-		'buffs',
-		'orders',
-		'secs',
-		'end_status',
-		'sf',
-		'ip'
+		'c_builds' => 'builds',
+		'c_exp' => 'exp',
+		'c_gold' => 'gold',
+		'c_razed' => 'razed',
+		'c_hp_healed' => 'hp_healed',
+		'c_pdmg' => 'pdmg',
+		'c_kills' => 'kills',
+		'c_debuffs' => 'debuffs',
+		'c_buffs' => 'buffs',
+		'c_orders' => 'orders',
+		'c_secs' => 'secs',
+		'c_end_status' => 'end_status',
+		'sf' => 'sf',
+		'ip' => 'ip'
 	)
 );
 
@@ -98,15 +98,35 @@ function handle_end_game()
 				`team` = {$team_id}";
 		
 		// stats fields
-		foreach ($fields as $field) {
+		foreach ($fields['action'] as $field) {
 			$query .= ", `{$field}` = '{$player[$field]}'";
 		}
-		
-		var_dump($query);
 		
 		db_query($query);
 	}
 	
+	/* Insert commander stats */
+	$commander_stats = post_serialized("commander_stats");
+	foreach ($commander_stats as $commander) {
+		$user_id = $commander['account_id'];
+		$team_id = $team_ids[$commander['c_team']];
+		
+		$query = "
+			INSERT INTO
+				commanders
+			SET
+				`user` = {$user_id},
+				`match` = {$match_id},
+				`team` = {$team_id}";
+		
+		// stats fields
+		foreach ($fields['commander'] as $name => $target) {
+			$query .= ", `{$target}` = '{$commander[$name]}'";
+		}
+		
+		db_query($query);
+	}
+		
 	return array();
 }
 

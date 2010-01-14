@@ -1,31 +1,11 @@
 <?php
 
-include("config.php");
+/* Show all errors */
+ini_set('display_errors', 'On');
+error_reporting(E_ALL);
 
-/* Serialize a PHP object into the Savage 2 data language */
-function s2_serialize($object) 
-{		
-	if(is_string($object)) {
-		/* Strings: s:[length]:"[text]"; */
-		print "s:".strlen($object).':"'.$object.'";';
-	} elseif(is_array($object)) {
-		/* Arrays: a:[length]:{[key][value][key][value];...} */
-		print "a:".count($object).":{";
-		
-		foreach($object as $key => $value) {
-			s2_serialize($key);
-			s2_serialize($value);
-		}
-		
-		print "}";
-	} elseif(is_numeric($object)) {
-		/* Integer: i:[value]; */
-		print "i:".$object.";";
-	} else {
-		/* Not available: N; */
-		print "N;";
-	}
-}
+/* Load config */
+include("config.php");
 
 /* Get input values */
 function get_input($key, $default = "")
@@ -74,7 +54,7 @@ function db_query($query) {
 }
 
 /* Escape anything */
-function db_escape($values, $quotes = true) {
+function db_escape($values) {
 	if (is_array($values)) {
 		foreach ($values as $key => $value) {
 			$values[$key] = db_escape($value, $quotes);
@@ -88,9 +68,6 @@ function db_escape($values, $quotes = true) {
 	}
 	else if (!is_numeric($values)) {
 		$values = mysql_real_escape_string($values);
-		if ($quotes) {
-			$values = '"' . $values . '"';
-		}
 	}
 	return $values;
 }
@@ -108,7 +85,7 @@ function dispatch_request($valid_actions)
 	$data = $func();
 	
 	/* Display output */
-	s2_serialize($data);		
+	serialize($data);		
 }
 
 /* Open database connection */

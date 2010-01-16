@@ -27,7 +27,7 @@ function post_serialized($key, $default = array())
 	if(!isset($_POST[$key]))
 		$result = $default;
 	else
-		$result = unserialize($_POST[$key]);
+		$result = unserialize(preg_replace('/\s\s+/', '', $_POST[$key]));
 	return db_escape($result);
 }
 
@@ -57,7 +57,7 @@ function db_query($query) {
 function db_escape($values) {
 	if (is_array($values)) {
 		foreach ($values as $key => $value) {
-			$values[$key] = db_escape($value, $quotes);
+			$values[$key] = db_escape($value);
 		}
 	}
 	else if ($values === null) {
@@ -85,7 +85,7 @@ function dispatch_request($valid_actions)
 	$data = $func();
 	
 	/* Display output */
-	serialize($data);		
+	echo serialize($data);		
 }
 
 /* Open database connection */

@@ -96,7 +96,25 @@ CREATE TABLE `matches` (
   `duration` int(11) DEFAULT NULL,
   `map` varchar(50) DEFAULT NULL,
   `raw` text,
+  `minlevel` int(11) DEFAULT NULL,
+  `maxlevel` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `players`
+--
+
+DROP TABLE IF EXISTS `players`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `players` (
+  `user` int(11) NOT NULL DEFAULT '0',
+  `server` int(11) NOT NULL,
+  `updated` datetime NOT NULL,
+  `online` int(11) DEFAULT NULL,
+  PRIMARY KEY (`user`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -109,7 +127,15 @@ DROP TABLE IF EXISTS `servers`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `servers` (
   `id` int(11) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`id`)
+  `ip` int(11) DEFAULT NULL,
+  `port` int(11) DEFAULT NULL,
+  `num_conn` int(11) DEFAULT NULL,
+  `max_conn` int(11) DEFAULT NULL,
+  `name` varchar(50) DEFAULT NULL,
+  `description` text,
+  `minlevel` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `ipport` (`ip`,`port`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -172,4 +198,4 @@ CREATE TABLE `votes` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2010-01-17  1:54:56
+-- Dump completed on 2010-01-18  0:30:01

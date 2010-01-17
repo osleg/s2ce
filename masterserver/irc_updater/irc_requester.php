@@ -3,7 +3,7 @@
 include("../common/lib.php");
 
 /* Dispatch request into handle function */
-dispatch_request(array("auth", "item_list", "clan_roster", "get_all_stats", "nick2id", "new_buddy", "remove_buddy"));
+dispatch_request(array("auth", "item_list", "clan_roster", "get_all_stats", "nick2id", "new_buddy", "remove_buddy", "cr_vote"));
 
 /* Authentification */
 function handle_auth()
@@ -176,6 +176,33 @@ function handle_remove_buddy()
 	return array(
 		"remove_buddy" => "ok",
 		"notification" => array(1,2));
+}
+
+function handle_cr_vote()
+{
+	$account_id = intval(post_input("account_id"));
+	$comm_id = intval(post_input("comm_id"));
+	$match_id = intval(post_input("match_id"));
+	$vote = intval(post_input("vote"));
+	$reason = post_input("reason");
+	
+	/* TODO: Check if user was in this game */
+	$query = "
+		INSERT INTO
+			votes
+		SET
+			account_id = {$account_id},
+			comm_id = {$comm_id},
+			match_id = {$match_id},
+			vote = {$vote},
+			reason = {$reason}";
+	
+	try {
+		mysql_query($query);
+		return array("cr" => "OK");
+	} catch (Exception $e) {
+		return array("cr" => "ERROR");
+	}
 }
 
 ?>

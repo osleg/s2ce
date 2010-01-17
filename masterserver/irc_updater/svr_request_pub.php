@@ -3,7 +3,7 @@
 include("../common/lib.php");
 
 /* Dispatch request into handle function */
-dispatch_request(array("get_online", "set_online", "set_online_ids", "shutdown"));
+dispatch_request(array("get_online", "set_online", "set_online_ids", "shutdown", "c_conn"));
 
 /* Getting list of servers */
 function handle_get_online()
@@ -36,18 +36,17 @@ function handle_set_online()
 	$desc = post_input("desc");
 	$minlevel = intval(post_input("minlevel"));
 	$maxlevel = intval(post_input("maxlevel"));	
-	$login = post_input("login");
 	
 	/* Create in database */
 	$query = "
 		INSERT INTO server SET 
 			ip = '$ip', port = $port, num_conn = $num_conn, max_conn = $max_conn,
 			name = '$name', description = '$description', minlevel = $minlevel,
-			maxlevel = $maxlevel, login = '$login, updated = NOW()'
+			maxlevel = $maxlevel, updated = NOW()
 		ON DUPLICATE KEY UPDATE
 			num_conn = $num_conn, max_conn = $max_conn, name = '$name', 
 			description = '$description', minlevel = $minlevel, 
-			maxlevel = $maxlevel, login = '$login', updated = NOW()";
+			maxlevel = $maxlevel, updated = NOW()";
 		
 	mysql_query($query);
 	
@@ -93,6 +92,49 @@ function handle_shutdown()
 	
 	/* Return empty */
 	return array();
+}
+
+/* User joins a server */
+function handle_c_conn() 
+{
+	$account_id = intval(post_input("account_id"));
+	$server_id = intval(post_input("server_id"));
+	
+	$query = "
+		INSERT INTO
+			player
+		SET
+			user = {$account_id},
+			server = {$server_id},
+			updated = NOW(),
+			online = 1
+		ON DUPLICATE KEY UPDATE
+			server = {$server_id},
+			updated = NOW(),
+			online = 1";
+	db_query($query);
+
+	return array("c_conn" => "OK");
+}
+
+/* User disconnects a server */
+function handle_c_disc() 
+{
+	$account_id = intval(post_input("account_id"));
+	$server_id = intval(post_input("server_id"));
+	
+	$query = "
+		UPDATE
+			player
+		SET
+			server = {$server_id},
+			online = 0,
+			updated = NOW()
+		WHERE
+			user = {$account_id}";
+	db_query($query);
+	
+	return array("c_disk" => "OK");
 }
 
 ?>

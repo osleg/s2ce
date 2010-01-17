@@ -145,6 +145,23 @@ CREATE TABLE `users` (
   `email` varchar(50) DEFAULT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `votes`
+--
+
+DROP TABLE IF EXISTS `votes`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `votes` (
+  `account_id` int(11) NOT NULL DEFAULT '0',
+  `comm_id` int(11) NOT NULL DEFAULT '0',
+  `match_id` int(11) NOT NULL DEFAULT '0',
+  `vote` int(11) NOT NULL,
+  `reason` text,
+  PRIMARY KEY (`account_id`,`comm_id`,`match_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -155,4 +172,4 @@ CREATE TABLE `users` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2010-01-16 19:54:08
+-- Dump completed on 2010-01-17  1:54:56

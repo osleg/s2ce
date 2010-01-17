@@ -195,10 +195,10 @@ function handle_cr_vote()
 			comm_id = {$comm_id},
 			match_id = {$match_id},
 			vote = {$vote},
-			reason = {$reason}";
+			reason = '{$reason}'";
 	
 	try {
-		mysql_query($query);
+		db_query($query);
 		return array("cr" => "OK");
 	} catch (Exception $e) {
 		return array("cr" => "ERROR");

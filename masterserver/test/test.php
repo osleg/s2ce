@@ -31,6 +31,7 @@
 			<div>
 				<select name="action" id="action">
 					<option value="/irc_updater/irc_stats.php">Insert stats</option>
+					<option value="/irc_updater/irc_requester.php">Comm vote</option>
 				</select>
 			</div>
 			<div>

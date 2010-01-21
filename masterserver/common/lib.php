@@ -53,6 +53,16 @@ function db_query($query) {
 	return $result;
 }
 
+/* Receive query as array */
+function db_query_array($query) {
+    $result = db_query($query);
+    $array = array();
+    while ($line = mysql_fetch_array($result)) {
+        $array[$line[0]] = $line[1];
+    }
+    return $array;
+}
+
 /* Escape anything */
 function db_escape($values) {
 	if (is_array($values)) {

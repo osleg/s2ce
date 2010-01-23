@@ -33,6 +33,8 @@ class Controller:
         self.show_meta = False
         self.auto_messages = {}
         self.auto_nr = 1
+        self.filters = {}
+        self.filter_nr = 1
         
         # Commands
         self.commands = {
@@ -40,7 +42,13 @@ class Controller:
             'set': self.irc_set,
             'whisper': self.irc_whisper,
             'auto': self.irc_auto,
+            'check': self.irc_check,
+            'list': self.irc_list,
+            'filter': self.irc_filter
         }
+        
+        #Data
+        self.online = {}
 
     # Event handling
         
@@ -58,17 +66,23 @@ class Controller:
 
     def on_chat_join(self, name):
         logging.info("Player joined: %s" % name)
+        self.online[name] = True
         if self.show_meta:
             self.irc_client.send_message("Player join: %s" % name)
             
     def on_chat_leave(self, name):
         logging.info("Player left: %s" % name)
+        self.online[name] = False
         if self.show_meta:
             self.irc_client.send_message("Player left: %s" % name)
             
-    def on_chat_message(self, nick, msg):
-        logging.info("Received chat message: <%s> %s" % (nick, msg))
-        self.irc_client.send_message("<%s> %s" % (nick, msg))
+    def on_chat_message(self, nick, text):
+        logging.info("Received chat message: <%s> %s" % (nick, text))
+        message = "<%s> %s" % (nick, text)
+        for f in self.filters:
+            if message.find(f) > -1:
+                return
+        self.irc_client.send_message(message)
         
     def on_chat_whisper(self, nick, msg):
         logging.info("Received whisper: <%s> %s" % (nick, msg))
@@ -107,6 +121,38 @@ class Controller:
         # !whisper target message
         (target, message) = self.split_data(data)
         self.chat_client.send_whisper(target, message)
+        
+    def irc_check(self, name):
+        if name in self.online.keys() and self.online[name]:
+            self.irc_client.send_message(name + " is online")
+        else:
+            self.irc_client.send_message(name + " is not online")
+    
+    def irc_list(self, data):
+        self.irc_client.send_message("Online are " + " ,".join([x for x in self.online.keys() if self.online[x]]))
+        
+    def irc_filter(self, data):
+        # !filter command param
+        (command, param) = self.split_data(data)
+        
+        if command == "list":
+            self.irc_client.send_message("There are %s filters active" % len(self.filters))
+            for nr in self.filters:
+                self.irc_client.send_message("%s: %s" % (nr, self.filters[nr]))
+        if command == "delete":
+            try:
+                nr = int(param)
+                del self.filters[nr]
+                self.irc_client.send_message("Successfully deleted filter %s" % nr)
+            except:
+                self.irc_client.send_message("Could not find filter nr %s" % param)
+        if command == "add":
+            try:
+                self.filters[self.filter_nr] = param
+                self.irc_client.send_message("Added as filter nr %s" % self.filter_nr)
+                self.filter_nr += 1
+            except:
+                self.irc_client.send_message("Syntax is: !filter add [keyword]")
         
     def irc_auto(self, data):
         # !auto command param

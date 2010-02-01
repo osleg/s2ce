@@ -40,8 +40,6 @@ CREATE TABLE `actionplayers` (
   `gold` int(11) NOT NULL,
   `hp_repaired` int(11) NOT NULL,
   `secs` int(11) NOT NULL,
-  `end_status` int(11) NOT NULL,
-  `sf` int(11) NOT NULL,
   `ip` varchar(50) NOT NULL,
   PRIMARY KEY (`user`,`match`,`team`),
   KEY `user` (`user`),
@@ -72,14 +70,27 @@ CREATE TABLE `commanders` (
   `buffs` int(11) NOT NULL,
   `orders` int(11) NOT NULL,
   `secs` int(11) NOT NULL,
-  `end_status` int(11) NOT NULL,
-  `sf` int(11) NOT NULL,
   `ip` varchar(50) NOT NULL,
   PRIMARY KEY (`user`,`match`,`team`),
   KEY `user` (`user`),
   KEY `match` (`match`),
   KEY `match_2` (`match`,`team`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `maps`
+--
+
+DROP TABLE IF EXISTS `maps`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `maps` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(50) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `name` (`name`)
+) ENGINE=MyISAM AUTO_INCREMENT=14 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -90,32 +101,15 @@ DROP TABLE IF EXISTS `matches`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `matches` (
-  `id` int(11) NOT NULL DEFAULT '0',
-  `server` int(11) DEFAULT NULL,
-  `winner` int(11) DEFAULT NULL,
-  `duration` int(11) DEFAULT NULL,
-  `map` varchar(50) DEFAULT NULL,
-  `raw` text,
-  `minlevel` int(11) DEFAULT NULL,
-  `maxlevel` int(11) DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `players`
---
-
-DROP TABLE IF EXISTS `players`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `players` (
-  `user` int(11) NOT NULL DEFAULT '0',
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `server` int(11) NOT NULL,
-  `updated` datetime NOT NULL,
-  `online` int(11) DEFAULT NULL,
-  PRIMARY KEY (`user`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+  `servername` varchar(50) NOT NULL,
+  `winner` int(11) DEFAULT NULL,
+  `duration` time NOT NULL,
+  `map` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `map` (`map`)
+) ENGINE=MyISAM AUTO_INCREMENT=139376 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -131,9 +125,10 @@ CREATE TABLE `servers` (
   `port` int(11) DEFAULT NULL,
   `num_conn` int(11) DEFAULT NULL,
   `max_conn` int(11) DEFAULT NULL,
-  `name` varchar(50) DEFAULT NULL,
+  `name` varchar(50) NOT NULL,
   `description` text,
   `minlevel` int(11) DEFAULT NULL,
+  `maxlevel` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `ipport` (`ip`,`port`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
@@ -150,12 +145,10 @@ CREATE TABLE `teams` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `match` int(11) NOT NULL,
   `race` varchar(15) NOT NULL,
-  `avg_sf` int(11) NOT NULL,
-  `commander` int(11) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `matchrace` (`match`,`race`),
   KEY `match` (`match`)
-) ENGINE=MyISAM AUTO_INCREMENT=57 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=7 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -166,10 +159,11 @@ DROP TABLE IF EXISTS `users`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `users` (
-  `id` int(11) DEFAULT NULL,
-  `username` varchar(50) DEFAULT NULL,
-  `email` varchar(50) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `username` varchar(50) NOT NULL,
+  `email` varchar(50) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=309197 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -198,4 +192,4 @@ CREATE TABLE `votes` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2010-01-18  0:30:01
+-- Dump completed on 2010-02-02  0:31:16

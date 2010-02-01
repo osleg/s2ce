@@ -75,12 +75,12 @@ while(true) {
             'map' => '/<b>Map Name:<\\/b> <span class=my12>([a-zA-Z ]*)<\\/span></'
         );
 
-        $data = array_map(function($regexp) { 
-                global $matchstats;
-                preg_match_all($regexp, $matchstats, $matches);
-                return $matches[1][0];
-            }, $regexps);
-    
+        $data = array();
+        foreach($regexps as $name => $regexp) {            
+            preg_match_all($regexp, $matchstats, $matches);
+            $data[$name] = $matches[1][0];
+        }
+        
         $lines = explode("\n", $matchstats);
     
         $nr = 0;
